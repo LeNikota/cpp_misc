@@ -1,129 +1,107 @@
+// Origin https://www.learncpp.com/cpp-tutorial/stdcin-and-handling-invalid-input/
 #include <iostream>
-#include <cctype>
-#include <string>
+#include <cstdlib> // for exit
+#include <limits>	 // for numeric_limits
+
 using namespace std;
 
-bool isAllDigit(string value)
+void ignoreLine()
 {
-	for (char letter : value)
-	{
-		if (isdigit(letter) == 0)
-		{
-			return false;
-		}
-	}
-	return true;
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-bool isOperator(char value)
+double getDouble()
 {
-	for (char letter : value)
+	while (true) // Loop until user enters a valid input
 	{
-		if (isdigit(letter) == 0)
+		cout << "Enter value: ";
+		double x;
+		cin >> x;
+
+		// Check for failed extraction
+		if (cin.fail()) // If the previous extraction failed
 		{
-			cout <<  << endl;
-			return 0;
+			if (cin.eof()) // If the stream was closed
+			{
+				exit(0); // Shut down the program now
+			}
+
+			// Let's handle the failure
+			cin.clear();	// Put us back in 'normal' operation mode
+			ignoreLine(); // And remove the bad input
+
+			cout << "Input is invalid.\n";
+			continue;
+		}
+
+		ignoreLine(); // Remove any extraneous input
+		return x;			// Return the value we extracted
+	}
+}
+
+char getOperator()
+{
+	while (true) // Loop until user enters a valid input
+	{
+		cout << "Enter one of the following: +, -, *, or /: ";
+		char operation{};
+		cin >> operation;
+
+		if (cin.fail()) // If the previous extraction failed
+		{
+			if (cin.eof()) // If the stream was closed
+			{
+				exit(0); // Shut down the program now
+			}
+
+			// Let's handle the failure
+			cin.clear(); // put us back in 'normal' operation mode
+		}
+
+		ignoreLine(); // remove any extraneous input
+
+		// Check whether the user entered meaningful input
+		switch (operation)
+		{
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+			return operation; // Return the entered char to the caller
+		default:						// Otherwise tell the user what went wrong
+			cout << "Input is invalid.\n";
 		}
 	}
-	return true;
+}
+
+void printResult(double x, char operation, double y)
+{
+	switch (operation)
+	{
+	case '+':
+		cout << x << " + " << y << " is " << x + y << '\n';
+		break;
+	case '-':
+		cout << x << " - " << y << " is " << x - y << '\n';
+		break;
+	case '*':
+		cout << x << " * " << y << " is " << x * y << '\n';
+		break;
+	case '/':
+		cout << x << " / " << y << " is " << x / y << '\n';
+		break;
+	default:
+		cout << "Something went wrong: printResult() got an invalid operator.\n";
+	}
 }
 
 int main()
 {
-	string x1, y1;
-	int k;
-	char oper;
-	float x, y;
-	bool isNumber;
-	
-	do
-	{
-		cout << "Input x\t";
-		cin >> x1;
-		isNumber = !isAllDigit(x1);
-		if (isNumber)
-		{
-			system("CLS");
-			cout << "Letters are not digits" << endl;
-		}
-	} while (isNumber);
-	do
-	{
-		cout << "Input y\t";
-		cin >> y1;
-		isNumber = !isAllDigit(y1);
-		if (isNumber)
-		{
-			system("CLS");
-			cout << "Letters are not digits" << endl;
-		}
-	} while (isNumber);
+	double x = getDouble();
+	char operation = getOperator();
+	double y = getDouble();
 
-	do
-	{
-		cout << "Input x\t";
-		cin >> x1;
-		isNumber = !isAllDigit(x1);
-		if (isNumber)
-		{
-			system("CLS");
-			cout << "Letters are not digits" << endl;
-		}
-	} while (isNumber);
-	
+	printResult(x, operation, y);
 
-	for (char letter : y1)
-	{
-		if (isdigit(letter) == 0)
-		{
-			cout << "ERROR" << endl;
-			return 0;
-		}
-	}
-	for (char o : {'+', '-', '*', '/'})
-	{
-		if (o == oper)
-		{
-			break;
-		}
-		else
-			k++;
-		if (k == 4)
-		{
-			cout << "ERROR" << endl;
-			return 0;
-		}
-	}
-
-	x = stof(x1);
-	y = stof(y1);
-
-	cout << x << oper << y << " = ";
-	switch (oper)
-	{
-	case '+':
-		cout << x + y;
-		break;
-	case '-':
-		cout << x - y;
-		break;
-	case '*':
-		cout << x * y;
-		break;
-	case '/':
-	{
-		if (y == 0)
-			cout << "Error";
-		else
-			cout << x / y;
-		break;
-	}
-	}
-	//	cout << x << y << endl;
-	//	cout<<x+y<<endl;
-	//	cout<<x-y<<endl;
-	//	cout<<x*y<<endl;
-	//
-	//
 	return 0;
 }
