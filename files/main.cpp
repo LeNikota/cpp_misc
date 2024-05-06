@@ -1,63 +1,98 @@
+#include <cstdlib>
+#include <limits>
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
-void read(string file_name)
+void clear_console()
 {
-	string text;
-	ifstream file(file_name);
-
-	while (getline(file, text))
-	{
-		cout << text << endl;
-	}
-
-	file.close();
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
 }
 
-void write(string file_name)
+class File
 {
-	string text;
-	ofstream file(file_name, ios_base::app);
-	while (true)
-	{
-		getline(cin, text);
+private:
+	string file_name;
+	string prev_file_name;
 
-		if (text == ":q")
+public:
+	File(string file_name)
+	{
+		this->file_name = file_name;
+	};
+
+	void read()
+	{
+		string text;
+		ifstream file(file_name);
+
+		while (getline(file, text))
 		{
-			file.close();
-			return;
+			cout << text << endl;
 		}
 
-		file << text << endl;
+		file.close();
 	}
-}
+
+	void write()
+	{
+		string text;
+		ofstream file(file_name, ios_base::app);
+
+		while (true)
+		{
+			getline(cin, text);
+
+			if (text == ":q")
+				break;
+
+			file << text << endl;
+		}
+
+		file.close();
+	}
+
+	bool check_exists(string file_name)
+	{
+		ifstream file(file_name);
+
+		return file.good();
+	}
+};
 
 int main()
 {
-	char option;
 	string file_name;
+	char option;
 
-	cout << "\nEnter the file name\t";
+	cout << "Enter the file name\t";
 	cin >> file_name;
+	clear_console();
 
+	File file(file_name);
 	while (true)
 	{
-		cout << "\nr - read, w - write, everything else - quit\t";
+		cout << file_name << " is opened" << endl;
+		cout << "r - read, w - write, q - quit\t";
 		cin >> option;
+		clear_console();
 
 		switch (option)
 		{
 		case 'r':
 		{
-			read(file_name);
+			file.read();
 			break;
 		}
 		case 'w':
 		{
-			write(file_name);
+			file.write();
 			break;
 		}
 		default:
